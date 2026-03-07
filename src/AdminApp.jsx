@@ -223,7 +223,7 @@ const ManageModsView = ({ mods, setMods }) => {
         if (apkFile) uploadData.append('apk', apkFile);
 
         try {
-            const apiUrl = import.meta.env.MODE === 'development' ? 'http://localhost:5000/api/mods' : '/api/mods';
+            const apiUrl = import.meta.env.MODE === 'development' ? 'http://localhost:5000/api/mods' : 'https://www.chheaknarat.site/api/mods';
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 body: uploadData,
@@ -249,7 +249,7 @@ const ManageModsView = ({ mods, setMods }) => {
 
     const deleteMod = async (id) => {
         try {
-            const apiUrl = import.meta.env.MODE === 'development' ? `http://localhost:5000/api/mods/${id}` : `/api/mods/${id}`;
+            const apiUrl = import.meta.env.MODE === 'development' ? `http://localhost:5000/api/mods/${id}` : `https://www.chheaknarat.site/api/mods/${id}`;
             await fetch(apiUrl, { method: 'DELETE' });
             setMods(mods.filter(m => m.id !== id));
         } catch (error) {
@@ -399,7 +399,7 @@ const ChatCommentSettingsView = () => {
     useEffect(() => {
         const fetchCurrent = async () => {
             try {
-                const apiUrl = import.meta.env.MODE === 'development' ? 'http://localhost:5000/api/announcement' : '/api/announcement';
+                const apiUrl = import.meta.env.MODE === 'development' ? 'http://localhost:5000/api/announcement' : 'https://www.chheaknarat.site/api/announcement';
                 const res = await fetch(apiUrl);
                 if (res.ok) {
                     const data = await res.json();
@@ -414,7 +414,7 @@ const ChatCommentSettingsView = () => {
     const handleBroadcast = async () => {
         setIsSaving(true);
         try {
-            const apiUrl = import.meta.env.MODE === 'development' ? 'http://localhost:5000/api/announcement' : '/api/announcement';
+            const apiUrl = import.meta.env.MODE === 'development' ? 'http://localhost:5000/api/announcement' : 'https://www.chheaknarat.site/api/announcement';
             await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -489,7 +489,7 @@ export default function AdminApp() {
         // Fetch mods from real backend
         const fetchMods = async () => {
             try {
-                const apiUrl = import.meta.env.MODE === 'development' ? 'http://localhost:5000/api/mods' : '/api/mods';
+                const apiUrl = import.meta.env.MODE === 'development' ? 'http://localhost:5000/api/mods' : 'https://www.chheaknarat.site/api/mods';
                 const response = await fetch(apiUrl);
                 if (response.ok) {
                     const data = await response.json();

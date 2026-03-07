@@ -439,7 +439,7 @@ export default function App() {
     // Sync with Admin Dashboard local storage
     const fetchTools = async () => {
       try {
-        const apiUrl = import.meta.env.MODE === 'development' ? 'http://localhost:5000/api/mods' : '/api/mods';
+        const apiUrl = import.meta.env.MODE === 'development' ? 'http://localhost:5000/api/mods' : 'https://www.chheaknarat.site/api/mods';
         const response = await fetch(apiUrl);
         if (response.ok) {
           const data = await response.json();
@@ -466,7 +466,7 @@ export default function App() {
 
     const fetchAnnouncement = async () => {
       try {
-        const apiUrl = import.meta.env.MODE === 'development' ? 'http://localhost:5000/api/announcement' : '/api/announcement';
+        const apiUrl = import.meta.env.MODE === 'development' ? 'http://localhost:5000/api/announcement' : 'https://www.chheaknarat.site/api/announcement';
         const response = await fetch(apiUrl);
         if (response.ok) {
           const data = await response.json();
