@@ -122,21 +122,17 @@ app.delete('/api/mods/:id', (req, res) => {
 });
 
 // --- Comments & Chat Broadcast (Site Announcements) ---
-let siteAnnouncement = {
-    message: 'Welcome to the new premium mod library! Enjoy our high-speed direct downloads.',
-    author: 'Admin',
-    date: new Date().toISOString()
-};
+let siteAnnouncement = {};
 
 app.get('/api/announcement', (req, res) => {
-    res.json(siteAnnouncement);
+    res.json(siteAnnouncement.message ? siteAnnouncement : { message: '', author: 'Admin' });
 });
 
 app.post('/api/announcement', (req, res) => {
     const { message, author } = req.body;
     siteAnnouncement = {
-        message: message || siteAnnouncement.message,
-        author: author || siteAnnouncement.author,
+        message: message || '',
+        author: author || 'Admin',
         date: new Date().toISOString()
     };
     res.json(siteAnnouncement);
