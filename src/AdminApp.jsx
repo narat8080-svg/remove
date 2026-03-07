@@ -390,6 +390,90 @@ const ManageModsView = ({ mods, setMods }) => {
     );
 };
 
+// --- Settings & Chat Broadcast View ---
+const ChatCommentSettingsView = () => {
+    const [message, setMessage] = useState('');
+    const [author, setAuthor] = useState('Admin');
+    const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        const fetchCurrent = async () => {
+            try {
+                const apiUrl = import.meta.env.MODE === 'development' ? 'http://localhost:5000/api/announcement' : '/api/announcement';
+                const res = await fetch(apiUrl);
+                if (res.ok) {
+                    const data = await res.json();
+                    setMessage(data.message);
+                    setAuthor(data.author);
+                }
+            } catch (e) { }
+        };
+        fetchCurrent();
+    }, []);
+
+    const handleBroadcast = async () => {
+        setIsSaving(true);
+        try {
+            const apiUrl = import.meta.env.MODE === 'development' ? 'http://localhost:5000/api/announcement' : '/api/announcement';
+            await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message, author })
+            });
+            alert('Website announcement updated live!');
+        } catch (e) {
+            alert('Failed to update announcement');
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    return (
+        <div className="animate-fade-in max-w-2xl mx-auto mt-8">
+            <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-xl border border-slate-200 dark:border-slate-700">
+                <div className="flex items-center gap-4 mb-8 border-b border-slate-100 dark:border-slate-700/50 pb-6">
+                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-500 rounded-xl flex items-center justify-center">
+                        <Bell className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-black text-slate-800 dark:text-white">Global Chat / Announcement</h2>
+                        <p className="text-sm font-bold text-slate-500">Push a live comment or announcement directly to the user website.</p>
+                    </div>
+                </div>
+
+                <div className="space-y-6">
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Display Name</label>
+                        <input
+                            value={author}
+                            onChange={e => setAuthor(e.target.value)}
+                            type="text"
+                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-blue-500 text-slate-800 dark:text-white font-medium"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Announcement Message</label>
+                        <textarea
+                            value={message}
+                            onChange={e => setMessage(e.target.value)}
+                            rows={4}
+                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-blue-500 text-slate-800 dark:text-white font-medium resize-none"
+                            placeholder="Type a global message for everyone..."
+                        />
+                    </div>
+                    <button
+                        onClick={handleBroadcast}
+                        disabled={isSaving || !message}
+                        className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 disabled:opacity-50 text-white font-black py-4 rounded-xl shadow-lg hover:shadow-blue-500/30 transition-all active:scale-[0.98] flex justify-center items-center gap-2"
+                    >
+                        <Activity className="w-5 h-5" />
+                        {isSaving ? 'Broadcasting...' : 'Broadcast to Website Live'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 // --- Main App Component ---
 
@@ -524,11 +608,12 @@ export default function AdminApp() {
                 <div className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
                     {currentView === 'overview' && <OverviewView mods={mods} />}
                     {currentView === 'mods' && <ManageModsView mods={mods} setMods={setMods} />}
-                    {(currentView === 'users' || currentView === 'settings') && (
+                    {currentView === 'settings' && <ChatCommentSettingsView />}
+                    {currentView === 'users' && (
                         <div className="flex flex-col items-center justify-center h-64 text-slate-400 animate-fade-in">
-                            <Settings className="w-12 h-12 mb-4 opacity-50" />
+                            <Users className="w-12 h-12 mb-4 opacity-50" />
                             <h2 className="text-xl font-bold">Module Under Construction</h2>
-                            <p className="text-sm">The {currentView} module will be available in the next update.</p>
+                            <p className="text-sm">The users module will be available in the next update.</p>
                         </div>
                     )}
                 </div>

@@ -121,9 +121,35 @@ app.delete('/api/mods/:id', (req, res) => {
     res.json({ message: 'Mod deleted successfully' });
 });
 
+// --- Comments & Chat Broadcast (Site Announcements) ---
+let siteAnnouncement = {
+    message: 'Welcome to the new premium mod library! Enjoy our high-speed direct downloads.',
+    author: 'Admin',
+    date: new Date().toISOString()
+};
+
+app.get('/api/announcement', (req, res) => {
+    res.json(siteAnnouncement);
+});
+
+app.post('/api/announcement', (req, res) => {
+    const { message, author } = req.body;
+    siteAnnouncement = {
+        message: message || siteAnnouncement.message,
+        author: author || siteAnnouncement.author,
+        date: new Date().toISOString()
+    };
+    res.json(siteAnnouncement);
+});
+
 // 4. Catch-all route to serve the React frontend for client-side routing
 app.use((req, res) => {
-    res.sendFile(path.join(__dirname, '../dist/index.html'));
+    const indexPath = path.join(__dirname, '../dist/index.html');
+    if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
+    } else {
+        res.status(404).send('<h1>Frontend not built yet!</h1><p>The <code>dist/</code> folder is missing.</p><p>Please go to your Render Dashboard -> Settings -> change <b>Build Command</b> to <code>npm install && npm run build</code> and redeploy.</p>');
+    }
 });
 
 // Start server

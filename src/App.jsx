@@ -433,6 +433,7 @@ export default function App() {
   const [viewKey, setViewKey] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [tools, setTools] = useState([]);
+  const [announcement, setAnnouncement] = useState(null);
 
   useEffect(() => {
     // Sync with Admin Dashboard local storage
@@ -463,10 +464,27 @@ export default function App() {
       }
     }
 
+    const fetchAnnouncement = async () => {
+      try {
+        const apiUrl = import.meta.env.MODE === 'development' ? 'http://localhost:5000/api/announcement' : '/api/announcement';
+        const response = await fetch(apiUrl);
+        if (response.ok) {
+          const data = await response.json();
+          setAnnouncement(data);
+        }
+      } catch (err) {
+        // Silent fail if no announcement
+      }
+    }
+
     fetchTools();
+    fetchAnnouncement();
 
     // Poll the backend every few seconds to reflect lives changes smoothly
-    const intervalId = setInterval(fetchTools, 3000);
+    const intervalId = setInterval(() => {
+      fetchTools();
+      fetchAnnouncement();
+    }, 3000);
     return () => clearInterval(intervalId);
   }, []);
 
@@ -576,6 +594,34 @@ export default function App() {
             <GenericModView mod={tools.find(m => m.id === currentView)} setView={handleSetView} />
           )}
         </main>
+
+        {/* Global Admin Chat / Announcement Bubble */}
+        {announcement && announcement.message && (
+          <div className="fixed bottom-6 right-6 max-w-sm bg-white dark:bg-slate-800 rounded-2xl shadow-[0_10px_30px_rgba(59,130,246,0.3)] overflow-hidden border border-slate-200 dark:border-slate-700 z-50 animate-slide-up hover:scale-[1.02] transition-transform duration-300">
+            <div className="bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center p-0.5">
+                  <img src={`https://ui-avatars.com/api/?name=${announcement.author.replace(' ', '+')}&rounded=true&background=fff&color=3b82f6&bold=true`} alt="Avatar" className="w-full h-full rounded-full border-2 border-white/50" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-white font-bold text-sm leading-tight">{announcement.author}</span>
+                  <span className="text-blue-100 text-xs font-semibold">Admin Broadcast</span>
+                </div>
+              </div>
+              <button onClick={() => setAnnouncement(null)} className="text-white/70 hover:text-white transition-colors p-1">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="px-5 py-4">
+              <p className="text-slate-800 dark:text-slate-200 text-sm font-medium leading-relaxed">
+                "{announcement.message}"
+              </p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 font-bold text-right uppercase tracking-wider">
+                Live Update
+              </p>
+            </div>
+          </div>
+        )}
 
       </div>
     </div >
