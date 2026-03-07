@@ -122,7 +122,7 @@ app.delete('/api/mods/:id', (req, res) => {
 });
 
 // 4. Catch-all route to serve the React frontend for client-side routing
-app.get('*', (req, res) => {
+app.use((req, res) => {
     res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
