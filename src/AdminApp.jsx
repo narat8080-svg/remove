@@ -223,7 +223,8 @@ const ManageModsView = ({ mods, setMods }) => {
         if (apkFile) uploadData.append('apk', apkFile);
 
         try {
-            const response = await fetch('http://localhost:5000/api/mods', {
+            const apiUrl = import.meta.env.MODE === 'development' ? 'http://localhost:5000/api/mods' : '/api/mods';
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 body: uploadData,
             });
@@ -248,7 +249,8 @@ const ManageModsView = ({ mods, setMods }) => {
 
     const deleteMod = async (id) => {
         try {
-            await fetch(`http://localhost:5000/api/mods/${id}`, { method: 'DELETE' });
+            const apiUrl = import.meta.env.MODE === 'development' ? `http://localhost:5000/api/mods/${id}` : `/api/mods/${id}`;
+            await fetch(apiUrl, { method: 'DELETE' });
             setMods(mods.filter(m => m.id !== id));
         } catch (error) {
             console.error('Delete Error:', error);
@@ -403,7 +405,8 @@ export default function AdminApp() {
         // Fetch mods from real backend
         const fetchMods = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/mods');
+                const apiUrl = import.meta.env.MODE === 'development' ? 'http://localhost:5000/api/mods' : '/api/mods';
+                const response = await fetch(apiUrl);
                 if (response.ok) {
                     const data = await response.json();
                     setMods(data);

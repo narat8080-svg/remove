@@ -438,7 +438,8 @@ export default function App() {
     // Sync with Admin Dashboard local storage
     const fetchTools = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/mods');
+        const apiUrl = import.meta.env.MODE === 'development' ? 'http://localhost:5000/api/mods' : '/api/mods';
+        const response = await fetch(apiUrl);
         if (response.ok) {
           const data = await response.json();
           const mappedTools = data.map(mod => ({
