@@ -18,6 +18,9 @@ app.use(express.json());
 // Set up static folder for serving uploaded files (images and APKs)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Serve the compiled Vite React frontend
+app.use(express.static(path.join(__dirname, '../dist')));
+
 // Ensure upload directories exist
 const uploadDirs = [path.join(__dirname, 'uploads/photos'), path.join(__dirname, 'uploads/apks')];
 uploadDirs.forEach(dir => {
@@ -118,9 +121,14 @@ app.delete('/api/mods/:id', (req, res) => {
     res.json({ message: 'Mod deleted successfully' });
 });
 
+// 4. Catch-all route to serve the React frontend for client-side routing
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../dist/index.html'));
+});
 
 // Start server
-app.listen(port, () => {
-    console.log(`Backend server running on http://localhost:${port}`);
+const PORT = process.env.PORT || port;
+app.listen(PORT, () => {
+    console.log(`Backend server running on port ${PORT}`);
     console.log(`Ensure 'uploads/' directory has right write permissions if deploying.`);
 });
